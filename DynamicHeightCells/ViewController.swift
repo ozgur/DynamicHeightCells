@@ -12,22 +12,22 @@ class ViewController: UICollectionViewController, UserCollectionViewLayoutDelega
   
   @IBOutlet weak var layout: UserCollectionViewLayout!
   
-  let colors: [UIColor] = [.redColor(), .greenColor(), .yellowColor(), .blueColor(),
-                           .orangeColor(), .redColor(), .greenColor(), .yellowColor()]
+  let colors: [UIColor] = [.red, .green, .yellow, .blue,
+                           .orange, .red, .green, .yellow]
   
   override func viewDidLoad() {
     super.viewDidLoad()
   
-    collectionView!.registerClass(UserCell.self, forCellWithReuseIdentifier: "UserCell")
+    collectionView!.register(UserCell.self, forCellWithReuseIdentifier: "UserCell")
     layout.delegate = self
   }
   
-  override func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+  override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return 50
   }
   
-  override func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UserCell", forIndexPath: indexPath)
+  override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "UserCell", for: indexPath)
     
     if let cell = cell as? UserCell {
       cell.userView.backgroundColor = colors[indexPath.item % colors.count]
@@ -35,7 +35,7 @@ class ViewController: UICollectionViewController, UserCollectionViewLayoutDelega
     return cell
   }
   
-  func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UserCollectionViewLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UserCollectionViewLayout, heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat {
     
     return CGFloat(arc4random_uniform(50) + 100)
   }

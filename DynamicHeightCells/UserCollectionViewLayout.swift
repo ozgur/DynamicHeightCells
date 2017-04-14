@@ -11,13 +11,13 @@ import UIKit
 class UserCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
   var height: CGFloat = 0.0
   
-  override func copyWithZone(zone: NSZone) -> AnyObject {
-    let copy = super.copyWithZone(zone) as! UserCollectionViewLayoutAttributes
+  override func copy(with zone: NSZone?) -> Any {
+    let copy = super.copy(with: zone) as! UserCollectionViewLayoutAttributes
     copy.height = height
     return copy
   }
   
-  override func isEqual(object: AnyObject?) -> Bool {
+  override func isEqual(_ object: Any?) -> Bool {
     if let object = object as? UserCollectionViewLayoutAttributes {
       if height != object.height {
         return false
@@ -29,51 +29,51 @@ class UserCollectionViewLayoutAttributes: UICollectionViewLayoutAttributes {
 }
 
 protocol UserCollectionViewLayoutDelegate: UICollectionViewDelegate {
-  func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UserCollectionViewLayout, heightForItemAtIndexPath indexPath: NSIndexPath) -> CGFloat
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UserCollectionViewLayout, heightForItemAtIndexPath indexPath: IndexPath) -> CGFloat
 }
 
 class UserCollectionViewLayout: UICollectionViewLayout {
   
-  private var contentHeight: CGFloat = 0.0
-  private var allAttributes = [UserCollectionViewLayoutAttributes]()
+  fileprivate var contentHeight: CGFloat = 0.0
+  fileprivate var allAttributes = [UserCollectionViewLayoutAttributes]()
   
   weak var delegate: UserCollectionViewLayoutDelegate!
   
   var numberOfColumns: Int = 2
   
-  private var numberOfItems: Int {
-    return collectionView?.numberOfItemsInSection(0) ?? 0
+  fileprivate var numberOfItems: Int {
+    return collectionView?.numberOfItems(inSection: 0) ?? 0
   }
   
-  private var contentWidth: CGFloat {
-    return CGRectGetWidth(collectionView?.bounds ?? CGRectZero)
+  fileprivate var contentWidth: CGFloat {
+    return (collectionView?.bounds ?? CGRect.zero).width
   }
   
-  private var itemWidth: CGFloat {
+  fileprivate var itemWidth: CGFloat {
     return round(contentWidth / CGFloat(numberOfColumns))
   }
   
-  override func collectionViewContentSize() -> CGSize {
+  override var collectionViewContentSize : CGSize {
     return CGSize(width: contentWidth, height: contentHeight)
   }
   
-  override class func layoutAttributesClass() -> AnyClass {
+  override class var layoutAttributesClass : AnyClass {
     return UserCollectionViewLayoutAttributes.self
   }
 
-  override func prepareLayout() {
+  override func prepare() {
     if allAttributes.isEmpty {
       
       let xOffsets = (0..<numberOfColumns).map { index -> CGFloat in
         return CGFloat(index) * itemWidth
       }
       
-      var yOffsets = Array(count: numberOfColumns, repeatedValue: CGFloat(0))
+      var yOffsets = Array(repeating: CGFloat(0), count: numberOfColumns)
       var column = 0
       
       for item in 0..<numberOfItems {
-        let indexPath = NSIndexPath(forItem: item, inSection: 0)
-        let attributes = UserCollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
+        let indexPath = IndexPath(item: item, section: 0)
+        let attributes = UserCollectionViewLayoutAttributes(forCellWith: indexPath)
 
         let cellHeight = delegate.collectionView(collectionView!, layout: self, heightForItemAtIndexPath: indexPath)
         
@@ -87,7 +87,7 @@ class UserCollectionViewLayout: UICollectionViewLayout {
         yOffsets[column] = yOffsets[column] + cellHeight
         
         column = (column >= numberOfColumns - 1) ? 0 : column + 1
-        contentHeight = max(contentHeight, CGRectGetMaxY(frame))
+        contentHeight = max(contentHeight, frame.maxY)
       }
     }
   }
@@ -98,13 +98,13 @@ class UserCollectionViewLayout: UICollectionViewLayout {
     super.invalidateLayout()
   }
   
-  override func layoutAttributesForElementsInRect(rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
+  override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
     return allAttributes.filter { attribute -> Bool in
-      return CGRectIntersectsRect(rect, attribute.frame)
+      return rect.intersects(attribute.frame)
     }
   }
   
-  override func layoutAttributesForItemAtIndexPath(indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes? {
+  override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
     return allAttributes.filter { attribute -> Bool in
       return attribute.indexPath == indexPath
     }.first

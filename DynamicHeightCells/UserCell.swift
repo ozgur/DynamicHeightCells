@@ -10,11 +10,11 @@ import UIKit
 
 class UserCell: UICollectionViewCell {
   
-  let userView = UIView(frame: CGRectZero)
-  private var heightLayoutConstraint: NSLayoutConstraint!
+  let userView = UIView(frame: CGRect.zero)
+  fileprivate var heightLayoutConstraint: NSLayoutConstraint!
   
-  override func applyLayoutAttributes(layoutAttributes: UICollectionViewLayoutAttributes) {
-    super.applyLayoutAttributes(layoutAttributes)
+  override func apply(_ layoutAttributes: UICollectionViewLayoutAttributes) {
+    super.apply(layoutAttributes)
     let attributes = layoutAttributes as! UserCollectionViewLayoutAttributes
     heightLayoutConstraint.constant = attributes.height
   }
@@ -24,26 +24,26 @@ class UserCell: UICollectionViewCell {
     userView.translatesAutoresizingMaskIntoConstraints = false
 
     contentView.addSubview(userView)
-    contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
-      "H:|[userView]|",
-      options: NSLayoutFormatOptions.AlignAllCenterY,
+    contentView.addConstraints(NSLayoutConstraint.constraints(
+      withVisualFormat: "H:|[userView]|",
+      options: NSLayoutFormatOptions.alignAllCenterY,
       metrics: nil,
       views: ["userView": userView])
     )
     
-    contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
-      "V:|[userView]|",
-      options: NSLayoutFormatOptions.AlignAllCenterX,
+    contentView.addConstraints(NSLayoutConstraint.constraints(
+      withVisualFormat: "V:|[userView]|",
+      options: NSLayoutFormatOptions.alignAllCenterX,
       metrics: nil,
       views: ["userView": userView])
     )
     
     heightLayoutConstraint = NSLayoutConstraint(
       item: userView,
-      attribute: NSLayoutAttribute.Height,
-      relatedBy: NSLayoutRelation.Equal,
+      attribute: NSLayoutAttribute.height,
+      relatedBy: NSLayoutRelation.equal,
       toItem: nil,
-      attribute: NSLayoutAttribute.NotAnAttribute,
+      attribute: NSLayoutAttribute.notAnAttribute,
       multiplier: 0.0,
       constant: 0.0
     )
